@@ -137,33 +137,34 @@ var sneakers = [
     ] }
 ];
 
-var SIZES = ["EU 39", "EU 40", "EU 41", "EU 42", "EU 43", "EU 44", "EU 45"];
 
-var DEFAULT_COLORS = [
+const SIZES = ["EU 39", "EU 40", "EU 41", "EU 42", "EU 43", "EU 44", "EU 45"];
+ 
+const DEFAULT_COLORS = [
   { name: "Чорний", hex: "#111111" },
   { name: "Білий", hex: "#f4f4f4" },
   { name: "Сірий", hex: "#9a9a9a" }
 ];
-
-var selectedSize = null;
-
-var catalogEl = document.getElementById("catalog");
-var overlay = document.getElementById("overlay");
-var overlayPanel = document.getElementById("overlay-panel");
-var sizeNote = document.getElementById("size-note");
-var navEl = document.getElementById("nav");
-var searchIndex = null;
-
-var closeBtnHTML = '<button class="overlay-close" data-action="close" aria-label="Закрити">✕</button>';
-
+ 
+let selectedSize = null; 
+ 
+const catalogEl = document.getElementById("catalog");
+const overlay = document.getElementById("overlay");
+const overlayPanel = document.getElementById("overlay-panel");
+const sizeNote = document.getElementById("size-note");
+const navEl = document.getElementById("nav");
+let searchIndex = null; 
+ 
+const closeBtnHTML = '<button class="overlay-close" data-action="close" aria-label="Закрити">✕</button>';
+ 
 function renderCatalog(list) {
-  var htmlParts = [];
-
-  for (var i = 0; i < list.length; i++) {
-    var s = list[i];
-    var imgSrc = s.img ? s.img : "img/" + s.id + ".jpg";
-    var price = s.price.toLocaleString("uk-UA");
-
+  const htmlParts = [];
+ 
+  for (let i = 0; i < list.length; i++) {
+    const s = list[i];
+    const imgSrc = s.img ? s.img : "img/" + s.id + ".jpg";
+    const price = s.price.toLocaleString("uk-UA");
+ 
     htmlParts.push(
       '<article class="card" data-id="' + s.id + '">' +
         '<div class="card-img"><img src="' + imgSrc + '" alt="' + s.name + '" loading="lazy"></div>' +
@@ -178,25 +179,25 @@ function renderCatalog(list) {
       '</article>'
     );
   }
-
+ 
   catalogEl.innerHTML = htmlParts.join("");
 }
 renderCatalog(sneakers);
-
+ 
 function openOverlay(html, panelClass) {
   overlayPanel.className = "overlay-panel " + (panelClass ? panelClass : "");
   overlayPanel.innerHTML = html;
   overlay.hidden = false;
   document.body.classList.add("no-scroll");
-
+ 
   requestAnimationFrame(function () {
     overlay.classList.add("open");
   });
-
-  var focusable = overlayPanel.querySelector("input, button, a");
+ 
+  const focusable = overlayPanel.querySelector("input, button, a");
   if (focusable) focusable.focus();
 }
-
+ 
 function closeOverlay() {
   overlay.classList.remove("open");
   document.body.classList.remove("no-scroll");
@@ -205,36 +206,36 @@ function closeOverlay() {
     overlayPanel.innerHTML = "";
   }, 180);
 }
-
+ 
 function getProductFromCard(cardEl) {
-  var id = cardEl.dataset.id;
-
-  for (var i = 0; i < sneakers.length; i++) {
+  const id = cardEl.dataset.id;
+ 
+  for (let i = 0; i < sneakers.length; i++) {
     if (sneakers[i].id === id) return sneakers[i];
   }
-
-  var nameEl = cardEl.querySelector("h3");
-  var priceEl = cardEl.querySelector(".card-top b");
-  var imgEl = cardEl.querySelector(".card-img img");
-
-  var name = nameEl ? nameEl.textContent.trim() : "Товар";
-  var priceText = priceEl ? priceEl.textContent.replace(/[^\d]/g, "") : "0";
-  var img = imgEl ? imgEl.getAttribute("src") : "";
-
-  var material = "—";
-  var weight = "—";
-  var specRows = cardEl.querySelectorAll(".specs > div");
-
-  for (var j = 0; j < specRows.length; j++) {
-    var dt = specRows[j].querySelector("dt");
-    var dd = specRows[j].querySelector("dd");
+ 
+  const nameEl = cardEl.querySelector("h3");
+  const priceEl = cardEl.querySelector(".card-top b");
+  const imgEl = cardEl.querySelector(".card-img img");
+ 
+  const name = nameEl ? nameEl.textContent.trim() : "Товар";
+  const priceText = priceEl ? priceEl.textContent.replace(/[^\d]/g, "") : "0";
+  const img = imgEl ? imgEl.getAttribute("src") : "";
+ 
+  let material = "—";
+  let weight = "—";
+  const specRows = cardEl.querySelectorAll(".specs > div");
+ 
+  for (let j = 0; j < specRows.length; j++) {
+    const dt = specRows[j].querySelector("dt");
+    const dd = specRows[j].querySelector("dd");
     if (!dt || !dd) continue;
-
-    var label = dt.textContent.trim().toUpperCase();
+ 
+    const label = dt.textContent.trim().toUpperCase();
     if (label.indexOf("МАТЕРІАЛ") !== -1) material = dd.textContent.trim();
     if (label.indexOf("ВАГА") !== -1) weight = dd.textContent.trim();
   }
-
+ 
   return {
     id: null,
     name: name,
@@ -245,31 +246,31 @@ function getProductFromCard(cardEl) {
     colors: DEFAULT_COLORS
   };
 }
-
+ 
 function openProductModal(cardEl) {
-  var p = getProductFromCard(cardEl);
-  var imgSrc = p.img ? p.img : "img/" + p.id + ".jpg";
-  var colors = (p.colors && p.colors.length) ? p.colors : DEFAULT_COLORS;
-  var preselectedSize = (selectedSize && SIZES.indexOf(selectedSize) !== -1) ? selectedSize : "EU 42";
-
-  var swatchesHTML = "";
-  for (var i = 0; i < colors.length; i++) {
-    var c = colors[i];
-    var isSelected = i === 0 ? "selected" : "";
-    var colorImg = c.img ? c.img : "";
+  const p = getProductFromCard(cardEl);
+  const imgSrc = p.img ? p.img : "img/" + p.id + ".jpg";
+  const colors = (p.colors && p.colors.length) ? p.colors : DEFAULT_COLORS;
+  const preselectedSize = (selectedSize && SIZES.indexOf(selectedSize) !== -1) ? selectedSize : "EU 42";
+ 
+  let swatchesHTML = "";
+  for (let i = 0; i < colors.length; i++) {
+    const c = colors[i];
+    const isSelected = i === 0 ? "selected" : "";
+    const colorImg = c.img ? c.img : "";
     swatchesHTML +=
       '<button type="button" class="swatch ' + isSelected + '" data-action="select-color" ' +
       'data-name="' + c.name + '" data-img="' + colorImg + '" style="background:' + c.hex + '" title="' + c.name + '" aria-label="' + c.name + '"></button>';
   }
-
-  var sizesHTML = "";
-  for (var k = 0; k < SIZES.length; k++) {
-    var sz = SIZES[k];
-    var selClass = sz === preselectedSize ? "selected" : "";
+ 
+  let sizesHTML = "";
+  for (let k = 0; k < SIZES.length; k++) {
+    const sz = SIZES[k];
+    const selClass = sz === preselectedSize ? "selected" : "";
     sizesHTML += '<button type="button" class="size-btn ' + selClass + '" data-action="select-size">' + sz.replace("EU ", "") + '</button>';
   }
-
-  var html =
+ 
+  const html =
     closeBtnHTML +
     '<div class="modal-grid" data-name="' + p.name + '" data-price="' + p.price + '">' +
       '<div class="modal-img"><img src="' + imgSrc + '" alt="' + p.name + '"></div>' +
@@ -289,46 +290,46 @@ function openProductModal(cardEl) {
         '<button type="button" class="btn btn-black modal-submit" data-action="submit-order">Оформити покупку <span>→</span></button>' +
       '</div>' +
     '</div>';
-
+ 
   openOverlay(html, "panel-product");
 }
-
+ 
 function selectColor(btn) {
-  var swatches = btn.parentElement.querySelectorAll(".swatch");
-  for (var i = 0; i < swatches.length; i++) swatches[i].classList.remove("selected");
+  const swatches = btn.parentElement.querySelectorAll(".swatch");
+  for (let i = 0; i < swatches.length; i++) swatches[i].classList.remove("selected");
   btn.classList.add("selected");
-
-  var label = overlayPanel.querySelector("[data-color-label]");
+ 
+  const label = overlayPanel.querySelector("[data-color-label]");
   if (label) label.textContent = btn.dataset.name;
-
-  var bigImg = overlayPanel.querySelector(".modal-img img");
+ 
+  const bigImg = overlayPanel.querySelector(".modal-img img");
   if (bigImg && btn.dataset.img) {
     bigImg.src = btn.dataset.img;
   }
 }
-
+ 
 function selectSizeInModal(btn) {
-  var buttons = btn.parentElement.querySelectorAll(".size-btn");
-  for (var i = 0; i < buttons.length; i++) buttons[i].classList.remove("selected");
+  const buttons = btn.parentElement.querySelectorAll(".size-btn");
+  for (let i = 0; i < buttons.length; i++) buttons[i].classList.remove("selected");
   btn.classList.add("selected");
 }
-
+ 
 function submitOrder() {
-  var root = overlayPanel.querySelector(".modal-grid");
+  const root = overlayPanel.querySelector(".modal-grid");
   if (!root) return;
-
-  var name = root.dataset.name;
-  var price = parseInt(root.dataset.price, 10) || 0;
-
-  var colorEl = overlayPanel.querySelector(".swatch.selected");
-  var color = colorEl ? colorEl.dataset.name : "—";
-
-  var sizeBtn = overlayPanel.querySelector(".size-btn.selected");
-  var size = sizeBtn ? "EU " + sizeBtn.textContent.trim() : "—";
-
-  var cartCount = document.getElementById("cart-count");
+ 
+  const name = root.dataset.name;
+  const price = parseInt(root.dataset.price, 10) || 0;
+ 
+  const colorEl = overlayPanel.querySelector(".swatch.selected");
+  const color = colorEl ? colorEl.dataset.name : "—";
+ 
+  const sizeBtn = overlayPanel.querySelector(".size-btn.selected");
+  const size = sizeBtn ? "EU " + sizeBtn.textContent.trim() : "—";
+ 
+  const cartCount = document.getElementById("cart-count");
   cartCount.textContent = (parseInt(cartCount.textContent, 10) || 0) + 1;
-
+ 
   overlayPanel.innerHTML =
     closeBtnHTML +
     '<div class="modal-success">' +
@@ -340,22 +341,22 @@ function submitOrder() {
       '<button type="button" class="btn btn-outline" data-action="close">Закрити</button>' +
     '</div>';
 }
-
+ 
 function openHeroSpecs() {
-  var hero = document.querySelector(".hero");
-  var name = hero.querySelector("h1").textContent.trim();
-  var lead = hero.querySelector(".lead").textContent.trim();
-  var img = hero.querySelector(".hero-media img").getAttribute("src");
-
-  var specRows = hero.querySelectorAll(".spec-box dl > div");
-  var specsHTML = "";
-  for (var i = 0; i < specRows.length; i++) {
-    var k = specRows[i].querySelector("dt").textContent.trim();
-    var v = specRows[i].querySelector("dd").textContent.trim();
+  const hero = document.querySelector(".hero");
+  const name = hero.querySelector("h1").textContent.trim();
+  const lead = hero.querySelector(".lead").textContent.trim();
+  const img = hero.querySelector(".hero-media img").getAttribute("src");
+ 
+  const specRows = hero.querySelectorAll(".spec-box dl > div");
+  let specsHTML = "";
+  for (let i = 0; i < specRows.length; i++) {
+    const k = specRows[i].querySelector("dt").textContent.trim();
+    const v = specRows[i].querySelector("dd").textContent.trim();
     specsHTML += '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>';
   }
-
-  var html =
+ 
+  const html =
     closeBtnHTML +
     '<div class="modal-grid">' +
       '<div class="modal-img"><img src="' + img + '" alt="' + name + '"></div>' +
@@ -367,25 +368,25 @@ function openHeroSpecs() {
         '<button type="button" class="btn btn-black modal-submit" data-action="close">Зрозуміло</button>' +
       '</div>' +
     '</div>';
-
+ 
   openOverlay(html, "panel-product");
 }
-
-var sizeRows = document.querySelectorAll("#size-table tr");
-for (var r = 0; r < sizeRows.length; r++) {
+ 
+const sizeRows = document.querySelectorAll("#size-table tr");
+for (let r = 0; r < sizeRows.length; r++) {
   sizeRows[r].addEventListener("click", function () {
-    for (var j = 0; j < sizeRows.length; j++) sizeRows[j].classList.remove("selected");
+    for (let j = 0; j < sizeRows.length; j++) sizeRows[j].classList.remove("selected");
     this.classList.add("selected");
-
-    var eu = this.children[0].textContent.trim();
-    var us = this.children[1].textContent.trim();
+ 
+    const eu = this.children[0].textContent.trim();
+    const us = this.children[1].textContent.trim();
     selectedSize = eu;
     sizeNote.textContent = "Обрано: " + eu + " (" + us + ") — цей розмір підставиться в кошик автоматично";
   });
 }
-
+ 
 function openScanIntro() {
-  var html =
+  const html =
     closeBtnHTML +
     '<div class="modal-scan">' +
       '<p class="tag">[ SHOSHU SCAN // РЕАЛЬНИЙ ЧАС ]</p>' +
@@ -394,18 +395,18 @@ function openScanIntro() {
       '<div class="scan-visual"><div class="scan-line"></div></div>' +
       '<button type="button" class="btn btn-black modal-submit" data-action="start-scan">Почати сканування <span>→</span></button>' +
     '</div>';
-
+ 
   openOverlay(html, "panel-scan");
 }
-
+ 
 function startScan() {
-  var steps = [
+  const steps = [
     "Ініціалізація камери…",
     "Пошук контуру стопи…",
     "Вимірювання довжини та ширини…",
     "Підбір найближчого розміру Shoshu…"
   ];
-
+ 
   overlayPanel.innerHTML =
     closeBtnHTML +
     '<div class="modal-scan">' +
@@ -415,14 +416,14 @@ function startScan() {
       '<p class="mono small scan-status" id="scan-status">' + steps[0] + '</p>' +
       '<div class="scan-progress"><div class="scan-progress-bar" id="scan-bar"></div></div>' +
     '</div>';
-
-  var statusEl = document.getElementById("scan-status");
-  var barEl = document.getElementById("scan-bar");
-  var step = 0;
-
+ 
+  const statusEl = document.getElementById("scan-status");
+  const barEl = document.getElementById("scan-bar");
+  let step = 0;
+ 
   barEl.style.width = Math.round((1 / steps.length) * 100) + "%";
-
-  var timer = setInterval(function () {
+ 
+  const timer = setInterval(function () {
     step++;
     if (step < steps.length) {
       statusEl.textContent = steps[step];
@@ -433,14 +434,14 @@ function startScan() {
     }
   }, 650);
 }
-
+ 
 function finishScan() {
-  var table = [
+  const table = [
     ["EU 39", "US 6.5", 245], ["EU 40", "US 7.5", 250], ["EU 41", "US 8", 260],
     ["EU 42", "US 9", 270], ["EU 43", "US 10", 280], ["EU 44", "US 11", 290], ["EU 45", "US 12", 300]
   ];
-  var pick = table[Math.floor(Math.random() * table.length)];
-
+  const pick = table[Math.floor(Math.random() * table.length)];
+ 
   overlayPanel.innerHTML =
     closeBtnHTML +
     '<div class="modal-scan">' +
@@ -454,37 +455,38 @@ function finishScan() {
       '</div>' +
     '</div>';
 }
-
+ 
 function applyScan(btn) {
-  var eu = btn.dataset.eu;
-  var us = btn.dataset.us;
+  const eu = btn.dataset.eu;
+  const us = btn.dataset.us;
   selectedSize = eu;
-
-  for (var i = 0; i < sizeRows.length; i++) {
-    var rowEu = sizeRows[i].children[0].textContent.trim();
+ 
+  for (let i = 0; i < sizeRows.length; i++) {
+    const rowEu = sizeRows[i].children[0].textContent.trim();
     if (rowEu === eu) {
       sizeRows[i].classList.add("selected");
     } else {
       sizeRows[i].classList.remove("selected");
     }
   }
-
+ 
   sizeNote.textContent = "Обрано: " + eu + " (" + us + ") — результат сканування";
   closeOverlay();
   document.getElementById("size-table").scrollIntoView({ behavior: "smooth", block: "center" });
 }
-
+ 
+// ===== пошук по сторінці =====
 function buildSearchIndex() {
-  var cards = document.querySelectorAll(".card");
+  const cards = document.querySelectorAll(".card");
   searchIndex = [];
-
-  for (var i = 0; i < cards.length; i++) {
-    var card = cards[i];
-    var nameEl = card.querySelector("h3");
-    var priceEl = card.querySelector(".card-top b");
-    var imgEl = card.querySelector(".card-img img");
-    var brandEl = card.querySelector(".specs dd");
-
+ 
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    const nameEl = card.querySelector("h3");
+    const priceEl = card.querySelector(".card-top b");
+    const imgEl = card.querySelector(".card-img img");
+    const brandEl = card.querySelector(".specs dd");
+ 
     searchIndex.push({
       el: card,
       name: nameEl ? nameEl.textContent.trim() : "",
@@ -494,11 +496,11 @@ function buildSearchIndex() {
     });
   }
 }
-
+ 
 function openSearch() {
   if (!searchIndex) buildSearchIndex();
-
-  var html =
+ 
+  const html =
     closeBtnHTML +
     '<div class="search-box">' +
       '<p class="tag">[ ПОШУК // SHOSHU/SHOP ]</p>' +
@@ -507,37 +509,37 @@ function openSearch() {
         '<p class="mono small muted search-hint">Почніть вводити, щоб знайти кросівки</p>' +
       '</div>' +
     '</div>';
-
+ 
   openOverlay(html, "panel-search");
 }
-
+ 
 function runSearch(query) {
-  var resultsEl = document.getElementById("search-results");
-  var q = query.trim().toLowerCase();
-
+  const resultsEl = document.getElementById("search-results");
+  const q = query.trim().toLowerCase();
+ 
   if (!q) {
     resultsEl.innerHTML = '<p class="mono small muted search-hint">Почніть вводити, щоб знайти кросівки</p>';
     return;
   }
-
-  var matches = [];
-  var matchIndexes = [];
-  for (var i = 0; i < searchIndex.length; i++) {
-    var item = searchIndex[i];
+ 
+  const matches = [];
+  const matchIndexes = [];
+  for (let i = 0; i < searchIndex.length; i++) {
+    const item = searchIndex[i];
     if (item.name.toLowerCase().indexOf(q) !== -1 || item.brand.toLowerCase().indexOf(q) !== -1) {
       matches.push(item);
       matchIndexes.push(i);
     }
   }
-
+ 
   if (matches.length === 0) {
     resultsEl.innerHTML = '<p class="mono small muted search-hint">Нічого не знайдено за запитом «' + query + '»</p>';
     return;
   }
-
-  var html = "";
-  for (var m = 0; m < matches.length; m++) {
-    var item2 = matches[m];
+ 
+  let html = "";
+  for (let m = 0; m < matches.length; m++) {
+    const item2 = matches[m];
     html +=
       '<button type="button" class="search-result" data-action="goto-card" data-index="' + m + '">' +
         '<span class="search-result-img" style="background-image:url(\'' + item2.img + '\')"></span>' +
@@ -548,17 +550,17 @@ function runSearch(query) {
         '<span class="search-result-price mono small">' + item2.price + '</span>' +
       '</button>';
   }
-
+ 
   resultsEl.innerHTML = html;
   resultsEl.dataset.matches = JSON.stringify(matchIndexes);
 }
-
+ 
 function gotoCard(btn) {
-  var idxList = JSON.parse(document.getElementById("search-results").dataset.matches || "[]");
-  var realIndex = idxList[parseInt(btn.dataset.index, 10)];
-  var item = searchIndex[realIndex];
+  const idxList = JSON.parse(document.getElementById("search-results").dataset.matches || "[]");
+  const realIndex = idxList[parseInt(btn.dataset.index, 10)];
+  const item = searchIndex[realIndex];
   if (!item) return;
-
+ 
   closeOverlay();
   setTimeout(function () {
     item.el.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -568,18 +570,18 @@ function gotoCard(btn) {
     }, 1400);
   }, 200);
 }
-
+ 
 function toggleMenu(btn) {
-  var isOpen = navEl.classList.toggle("nav-open");
+  const isOpen = navEl.classList.toggle("nav-open");
   btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
 }
-
+ 
 document.addEventListener("click", function (e) {
-  var target = e.target.closest("[data-action]");
+  const target = e.target.closest("[data-action]");
   if (!target) return;
-
-  var action = target.dataset.action;
-
+ 
+  const action = target.dataset.action;
+ 
   if (action === "buy") {
     e.preventDefault();
     openProductModal(target.closest(".card"));
@@ -610,13 +612,13 @@ document.addEventListener("click", function (e) {
     closeOverlay();
   }
 });
-
+ 
 document.addEventListener("input", function (e) {
   if (e.target && e.target.id === "search-input") {
     runSearch(e.target.value);
   }
 });
-
+ 
 document.addEventListener("keydown", function (e) {
   if (e.key === "Escape" && !overlay.hidden) {
     closeOverlay();
